@@ -26,7 +26,7 @@ jobs:
             - name: prepare build
               run: |
                 mkdir builld
-                rsync -av --exclude=build . build/
+                rsync -av --exclude=build --exclude=.git --exclude=.github . build/
 
             - name: deploy
               uses: appleboy/ssh-action@v0.1.10
@@ -47,7 +47,7 @@ jobs:
                 target: /var/www/html/portfolio
 
 
-            - name: deploy
+            - name: nginx reload
               uses: appleboy/ssh-action@v0.1.10
               with:
                 host: ${{ secrets.HOST }}
