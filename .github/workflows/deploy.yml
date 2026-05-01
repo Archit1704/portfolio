@@ -17,7 +17,11 @@ jobs:
               run: |
                 sudo apt update
                 sudo apt install tidy -y
-                tidy -e index.html
+                tidy -e index.html | tee output.txt
+                if grep -q "Error" output.txt; then
+                    echo "HTML validation failed"
+                    exit 1
+                fi
 
             - name: deploy
               uses: appleboy/ssh-action@v0.1.10
