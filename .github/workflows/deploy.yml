@@ -10,6 +10,15 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - name: checkout code
+              uses: actions/checkout@v3
+            
+            - name: validate html
+              run: |
+                sudo apt update
+                sudo apt install tidy -y
+                tidy -e index.html
+
             - name: deploy
               uses: appleboy/ssh-action@v0.1.10
               with:
@@ -19,4 +28,4 @@ jobs:
                 script: |
                   cd /var/www/html/portfolio
                   git pull origin main
-                  sudo systemctl restart nginx
+                  sudo nginx -t && sudo systemctl reload nginx
