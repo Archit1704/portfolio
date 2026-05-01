@@ -27,6 +27,11 @@ jobs:
               run: |
                 mkdir builld
                 rsync -av --exclude=build --exclude=.git --exclude=.github . build/
+              
+            - name: debug build
+              run: |
+                echo "===== BUILD STRUCTURE ====="
+                ls -R build
 
             - name: deploy
               uses: appleboy/ssh-action@v0.1.10
@@ -43,8 +48,9 @@ jobs:
                 host: ${{ secrets.HOST }}
                 username: ubuntu
                 key: ${{ secrets.SSH_KEY }}
-                source: "build/*"
+                source: "build"
                 target: /var/www/html/portfolio
+                strip_components: 1
 
 
             - name: nginx reload
