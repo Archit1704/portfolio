@@ -23,6 +23,11 @@ jobs:
                     exit 1
                 fi
 
+            - name: prepare build
+              run: |
+                mkdir builld
+                rsync -av --exclude=build . build/
+
             - name: deploy
               uses: appleboy/ssh-action@v0.1.10
               with:
@@ -30,6 +35,23 @@ jobs:
                 username: ubuntu
                 key: ${{ secrets.SSH_KEY }}
                 script: |
-                  cd /var/www/html/portfolio
-                  git pull origin main
+                  rm -rf /var/www/html/portfolio/*
+
+            - name: copy files to EC2
+              uses: appleboy/scp-action@v0.1.4
+              with:
+                host: ${{ secrets.HOST }}
+                username: ubuntu
+                key: ${{ secrets.SSH_KEY }}
+                source: "build/*"
+                target: /var/www/html/portfolio
+
+
+            - name: deploy
+              uses: appleboy/ssh-action@v0.1.10
+              with:
+                host: ${{ secrets.HOST }}
+                username: ubuntu
+                key: ${{ secrets.SSH_KEY }}
+                script: |
                   sudo nginx -t && sudo systemctl reload nginx
